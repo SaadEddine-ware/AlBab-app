@@ -1,0 +1,6 @@
+singleton Theme ThemeSingleton.qml
+singleton Toast ToastManager.qml
+BackButton 1.0 BackButton.qml
+ToolButton 1.0 ToolButton.qml
+InputField 1.0 InputField.qml
+ToolTabBar 1.0 ToolTabBar.qml
