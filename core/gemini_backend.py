@@ -22,6 +22,7 @@ class GeminiBackend(QObject):
     errorOccurred = Signal(str)
     statusChanged = Signal(str)
     offlineChanged = Signal(bool)
+    keysExhausted = Signal()
 
     def __init__(self, key_rotation=None, parent=None):
         super().__init__(parent)
@@ -126,6 +127,9 @@ class GeminiBackend(QObject):
                 self._client = None
                 self._chat = None
                 self.errorOccurred.emit(f"Failed to initialize AI: {str(e)}")
+                # Check if all keys exhausted
+                if self._key_rotation and not self._key_rotation.has_keys:
+                    self.keysExhausted.emit()
 
     @Property(bool, notify=statusChanged)
     def isThinking(self):
@@ -440,3 +444,4 @@ class GeminiBackend(QObject):
     @Property(bool, notify=offlineChanged)
     def isOffline(self):
         return self._is_offline
+
