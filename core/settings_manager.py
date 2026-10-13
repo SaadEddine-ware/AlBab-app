@@ -13,7 +13,8 @@ _DEFAULTS = {
         "first_name": "",
         "last_name": "",
         "faculty": "",
-    }
+    },
+    "offline_mode": False,
 }
 
 
@@ -43,3 +44,10 @@ class SettingsManager:
     @property
     def path(self):
         return self._db.path
+
+    # Offline mode helpers
+    def is_offline_mode(self) -> bool:
+        return self.get("offline_mode", False)
+
+    def set_offline_mode(self, enabled: bool):
+        self.set("offline_mode", enabled)
