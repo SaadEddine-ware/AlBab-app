@@ -76,10 +76,25 @@ from core.data_store import DataStore
 from core.formula_library_backend import FormulaLibraryBackend
 from core.tools_backend import ToolsBackend
 from core.mindmap_backend import MindMapBackend
+from core.offline_chat_backend import OfflineChatBackend
 
 _gemini_key_rotation = KeyRotation(keys=settings_mgr.get("api_keys", []))
 
 _math_engine = MathEngine()
+
+# Create offline chat backend (always available)
+offline_chat_backend = OfflineChatBackend()
+
+# Create Gemini backend
+gemini_backend = GeminiBackend(key_rotation=_gemini_key_rotation)
+
+# Connect keysExhausted to notify UI and optionally auto-switch
+def _on_keys_exhausted():
+    print("All API keys exhausted — consider enabling Offline Mode in Settings")
+    # Could auto-enable offline mode here if desired:
+    # settings_mgr.set_offline_mode(True)
+
+gemini_backend.keysExhausted.connect(_on_keys_exhausted)
 
 backends = {
     "MathEngine": _math_engine,
@@ -98,7 +113,8 @@ backends = {
     "ExportBackend": ExportBackend(),
     "ChatSessionManager": ChatSessionManager(db=settings_mgr._db, key_rotation=_gemini_key_rotation),
     "UserManager": user_manager,
-    "GeminiBackend": GeminiBackend(key_rotation=_gemini_key_rotation),
+    "GeminiBackend": gemini_backend,
+    "OfflineChatBackend": offline_chat_backend,
     "KeyRotation": _gemini_key_rotation,
     "OpenCodeBackend": OpenCodeChatBackend(
         working_dir=opencode_wd,
